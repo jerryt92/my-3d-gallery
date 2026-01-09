@@ -1,27 +1,19 @@
 {
   "tianma": {
     "name": "天马射电天文望远镜",
-    "url": "tianma.glb",
-    "show": true
+    "url": "tianma.glb"
   },
   "tianma.glb": {
     "name": "天马射电天文望远镜"
   },
   "xiaohuangren.glb": {
-    "name": "小黄人",
-    "show": true
+    "name": "小黄人"
   },
   "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Duck/glTF-Binary/Duck.glb": {
     "name": "小黄鸭"
   },
   "duck": {
     "name": "小黄鸭",
-    "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Duck/glTF-Binary/Duck.glb",
-    "show": true
-  },
-  "chongdianbao": {
-    "name": "充电宝",
-    "url": "chongdianbao.glb",
-    "show": true
+    "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Duck/glTF-Binary/Duck.glb"
   }
 }
