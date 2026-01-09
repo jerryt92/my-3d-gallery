@@ -84,7 +84,6 @@ const { ensure: ensureThumb } = useModelThumbnails({
 onMounted(async () => {
 	try {
 		isLoading.value = true;
-		// IMPORTANT: use BASE_URL so this works under /preview route and custom Vite base.
 		const res = await fetch(`${import.meta.env.BASE_URL === '/' ? '.' : import.meta.env.BASE_URL}/models/info.json`);
 		const data = await res.json();
 		modelsData.value = data;
@@ -147,9 +146,9 @@ const onSlideChange = (swiper) => {
 
 const goToViewer = (modelUrl: string) => {
 	// Web History 模式下，使用 query 参数传递模型路径
-	// URL 格式: /?model=xxx
+	// URL 格式: /viewer?model=xxx
 	router.push({ 
-		path: '/', 
+		path: '/viewer', 
 		query: { model: modelUrl } 
 	});
 };
