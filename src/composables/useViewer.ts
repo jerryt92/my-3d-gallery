@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { Viewer } from '../viewer';
+import { Viewer } from '../pages/viewer.ts';
 
 export function useViewer(options) {
 	const viewer = ref(null);

@@ -33,8 +33,8 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GUI } from 'dat.gui';
 import 'dat.gui/build/dat.gui.css';
 
-import { environments } from './environments.ts';
-import { webBaseTitle } from './oem';
+import { environments } from '../environments.ts';
+import { webBaseTitle } from '../oem.ts';
 
 const DEFAULT_CAMERA = '[default]';
 
