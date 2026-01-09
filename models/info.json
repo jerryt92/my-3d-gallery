@@ -15,5 +15,9 @@
   "duck": {
     "name": "小黄鸭",
     "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Duck/glTF-Binary/Duck.glb"
+  },
+  "chongdianbao": {
+    "name": "充电宝",
+    "url": "chongdianbao.glb"
   }
 }
