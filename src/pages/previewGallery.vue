@@ -3,12 +3,12 @@
 		<div class="background-blur" :style="{ backgroundImage: `url(${activeBg})` }"></div>
 
 		<header class="gallery-header">
-			<h1>3D Model Library</h1>
-			<p>Select a model to view in AR/3D</p>
+			<h1>{{ webBaseTitle }}</h1>
+			<p>Select a model to view in 3D</p>
 		</header>
 
 		<div class="swiper-container">
-			<swiper
+			<Swiper
 				:modules="modules"
 				:effect="'coverflow'"
 				:grabCursor="true"
@@ -22,17 +22,17 @@
 					releaseOnEdges: true,
 				}"
 				:coverflowEffect="{
-          rotate: 50,
-          stretch: 0,
-          depth: 100,
-          modifier: 1,
-          slideShadows: true,
-        }"
+					rotate: 50,
+					stretch: 0,
+					depth: 100,
+					modifier: 1,
+					slideShadows: true,
+				}"
 				:keyboard="{ enabled: true }"
 				@slideChange="onSlideChange"
 				class="mySwiper"
 			>
-				<swiper-slide v-for="entry in displayModels" :key="entry.id">
+				<SwiperSlide v-for="entry in displayModels" :key="entry.id">
 					<div class="model-card" @click="goToViewer(entry.modelUrl)">
 						<div class="card-image">
 							<img
@@ -49,8 +49,8 @@
 							<button class="view-btn">View Model</button>
 						</div>
 					</div>
-				</swiper-slide>
-			</swiper>
+				</SwiperSlide>
+			</Swiper>
 			<div v-if="!isLoading && displayModels.length === 0" class="empty-state">
 				No models found. Check `public/models/info.json`.
 			</div>
@@ -61,12 +61,18 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Swiper as SwiperVue, SwiperSlide as SwiperSlideVue } from 'swiper/vue';
 import { EffectCoverflow, Keyboard, Mousewheel } from 'swiper/modules';
 // 导入 Swiper 样式
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import { useModelThumbnails } from '@/composables/useModelThumbnails';
+import { webBaseTitle } from '@/oem.ts';
+
+// `swiper/vue` 的 TS 定义在模板类型检查里不完整（部分 props 会被推断为不存在）。
+// 这里做一次显式 cast，避免 mousewheel/keyboard 等配置在模板里报错。
+const Swiper = SwiperVue as any;
+const SwiperSlide = SwiperSlideVue as any;
 
 const router = useRouter();
 const isLoading = ref(false);
@@ -84,11 +90,13 @@ const { ensure: ensureThumb } = useModelThumbnails({
 onMounted(async () => {
 	try {
 		isLoading.value = true;
-		const res = await fetch(`${import.meta.env.BASE_URL === '/' ? '.' : import.meta.env.BASE_URL}/models/info.json`);
+		const res = await fetch(
+			`${import.meta.env.BASE_URL === '/' ? '.' : import.meta.env.BASE_URL}/models/info.json`,
+		);
 		const data = await res.json();
 		modelsData.value = data;
 	} catch (e) {
-		console.error("Failed to load models info", e);
+		console.error('Failed to load models info', e);
 	} finally {
 		isLoading.value = false;
 	}
@@ -97,18 +105,16 @@ onMounted(async () => {
 type DisplayModel = { id: string; name: string; modelUrl: string };
 
 const displayModels = computed<DisplayModel[]>(() => {
-	// `public/models/info.json` doesn't always have `show`.
-	// Default to show unless explicitly set to false.
+	// 仅展示 `public/models/info.json` 中明确标记 `show: true` 的条目。
+	// 这样可以在 info.json 里保留一些“仅用于映射/别名”的记录（例如仅有 name 的 *.glb 键），但不在 preview 里展示。
 	const byUrl = new Map<string, DisplayModel>();
 
 	for (const [key, raw] of Object.entries(modelsData.value || {})) {
-		if (raw && raw.show === false) continue;
+		if (!raw || raw.show !== true) continue;
 
 		const modelUrl = String((raw && raw.url) || key);
 		const looksLikeModel =
-			modelUrl.startsWith('http') ||
-			modelUrl.endsWith('.glb') ||
-			modelUrl.endsWith('.gltf');
+			modelUrl.startsWith('http') || modelUrl.endsWith('.glb') || modelUrl.endsWith('.gltf');
 		if (!looksLikeModel) continue;
 
 		const name = String((raw && raw.name) || key);
@@ -147,9 +153,9 @@ const onSlideChange = (swiper) => {
 const goToViewer = (modelUrl: string) => {
 	// Web History 模式下，使用 query 参数传递模型路径
 	// URL 格式: /viewer?model=xxx
-	router.push({ 
-		path: '/viewer', 
-		query: { model: modelUrl } 
+	router.push({
+		path: '/viewer',
+		query: { model: modelUrl },
 	});
 };
 
@@ -170,7 +176,10 @@ const modules = [EffectCoverflow, Keyboard, Mousewheel];
 
 .background-blur {
 	position: absolute;
-	top: 0; left: 0; right: 0; bottom: 0;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 	background-size: cover;
 	background-position: center;
 	filter: blur(50px) brightness(0.4);
