@@ -84,7 +84,50 @@ const { ensure: ensureThumb } = useModelThumbnails({
 	width: 512,
 	height: 512,
 	background: null,
+	// 缩略图生成会解析 glb/贴图，放到 idle 阶段 + 单通道队列，尽量不影响 Swiper 交互
+	schedule: 'idle',
+	maxConcurrent: 1,
 });
+
+const PREFETCH_RADIUS = 2;
+const PREFETCH_FIRST_N = 7;
+let prefetchRestTimer: number | null = null;
+
+function prefetchThumb(url: string) {
+	// 已有缩略图则跳过
+	if (thumbs.value[url]) return;
+	ensureThumb(url).then((dataUrl) => {
+		if (dataUrl) thumbs.value[url] = dataUrl;
+	});
+}
+
+function prefetchPriority() {
+	const models = displayModels.value;
+	if (!models.length) return;
+
+	const urls = new Set<string>();
+
+	// 首屏前 N 个
+	for (let i = 0; i < Math.min(PREFETCH_FIRST_N, models.length); i++) {
+		urls.add(models[i].modelUrl);
+	}
+
+	// 当前激活附近
+	for (let i = activeIndex.value - PREFETCH_RADIUS; i <= activeIndex.value + PREFETCH_RADIUS; i++) {
+		const m = models[i];
+		if (m) urls.add(m.modelUrl);
+	}
+
+	urls.forEach((u) => prefetchThumb(u));
+}
+
+function schedulePrefetchRest() {
+	if (prefetchRestTimer) window.clearTimeout(prefetchRestTimer);
+	// 给用户一点时间先滚动/切换，后台再补齐全部缩略图
+	prefetchRestTimer = window.setTimeout(() => {
+		displayModels.value.forEach((m) => prefetchThumb(m.modelUrl));
+	}, 900);
+}
 
 // 获取并过滤数据
 onMounted(async () => {
@@ -135,19 +178,21 @@ const activeBg = computed(() => {
 watch(
 	() => displayModels.value,
 	(models) => {
+		// 先初始化占位；不要一次性触发所有缩略图生成（会卡住主线程，影响 Swiper 交互）
 		models.forEach((m) => {
-			if (thumbs.value[m.modelUrl] !== undefined) return;
-			thumbs.value[m.modelUrl] = null;
-			ensureThumb(m.modelUrl).then((dataUrl) => {
-				if (dataUrl) thumbs.value[m.modelUrl] = dataUrl;
-			});
+			if (thumbs.value[m.modelUrl] === undefined) thumbs.value[m.modelUrl] = null;
 		});
+
+		// 优先生成首屏 + 当前附近几张，其余后台慢慢补齐
+		prefetchPriority();
+		schedulePrefetchRest();
 	},
 	{ immediate: true },
 );
 
 const onSlideChange = (swiper) => {
 	activeIndex.value = swiper.activeIndex;
+	prefetchPriority();
 };
 
 const goToViewer = (modelUrl: string) => {

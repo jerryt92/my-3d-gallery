@@ -53,6 +53,12 @@ const Preset = { ASSET_GENERATOR: 'assetgenerator' };
 
 Cache.enabled = true;
 
+function runWhenIdle(cb, timeoutMs = 1200) {
+	const ric = window.requestIdleCallback;
+	if (typeof ric === 'function') return ric(() => cb(), { timeout: timeoutMs });
+	return window.setTimeout(cb, 0);
+}
+
 export class Viewer {
 	constructor(el, options) {
 		this.el = el;
@@ -121,6 +127,9 @@ export class Viewer {
 		this.pmremGenerator.compileEquirectangularShader();
 
 		this.neutralEnvironment = this.pmremGenerator.fromScene(new RoomEnvironment()).texture;
+		// envMap 生成（EXR -> PMREM）比较重：做成可取消 + 缓存，避免频繁卡主线程
+		this._envRequestId = 0;
+		this._envCache = new Map(); // key: environment.path, value: pmrem texture
 
 		this.controls = new OrbitControls(this.defaultCamera, this.renderer.domElement);
 		this.controls.screenSpacePanning = true;
@@ -573,10 +582,24 @@ export class Viewer {
 			(entry) => entry.name === this.state.environment,
 		)[0];
 
-		this.getCubeMapTexture(environment).then(({ envMap }) => {
-			this.scene.environment = envMap;
-			this.scene.background = this.state.background ? envMap : this.backgroundColor;
-		});
+		const requestId = ++this._envRequestId;
+
+		// 先给一个轻量、立刻可用的环境光，避免“加载环境贴图时画面发黑/卡顿感更强”
+		if (environment?.id && environment.id !== 'neutral') {
+			this.scene.environment = this.neutralEnvironment;
+			this.scene.background = this.state.background ? this.neutralEnvironment : this.backgroundColor;
+		}
+
+		this.getCubeMapTexture(environment)
+			.then(({ envMap }) => {
+				if (requestId !== this._envRequestId) return;
+				this.scene.environment = envMap;
+				this.scene.background = this.state.background ? envMap : this.backgroundColor;
+			})
+			.catch((e) => {
+				// 保持 neutral 环境即可
+				console.warn('[env] failed:', environment?.name, e);
+			});
 	}
 
 	getCubeMapTexture(environment) {
@@ -592,14 +615,31 @@ export class Viewer {
 			return Promise.resolve({ envMap: null });
 		}
 
+		// cache
+		if (path && this._envCache && this._envCache.has(path)) {
+			return Promise.resolve({ envMap: this._envCache.get(path) });
+		}
+
 		return new Promise((resolve, reject) => {
 			new EXRLoader().load(
 				path,
 				(texture) => {
-					const envMap = this.pmremGenerator.fromEquirectangular(texture).texture;
-					this.pmremGenerator.dispose();
-
-					resolve({ envMap });
+					// PMREM 生成会占用主线程，尽量放到 idle 阶段执行，减少对交互的影响
+					runWhenIdle(() => {
+						try {
+							const envMap = this.pmremGenerator.fromEquirectangular(texture).texture;
+							texture.dispose();
+							if (path && this._envCache) this._envCache.set(path, envMap);
+							resolve({ envMap });
+						} catch (e) {
+							try {
+								texture.dispose();
+							} catch {
+								// ignore
+							}
+							reject(e);
+						}
+					});
 				},
 				undefined,
 				reject,
