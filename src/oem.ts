@@ -1,0 +1,1 @@
+export const webBaseTitle = 'JerryTian\'s 3D Gallery'
