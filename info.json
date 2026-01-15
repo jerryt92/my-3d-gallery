@@ -1,0 +1,22 @@
+{
+  "jialiluedengta": {
+    "name": "普生 · 伽利略灯塔",
+    "url": "https://3d.oss.jerryt92.top/jialiluedengta.glb",
+    "show": true
+  },
+  "tianma": {
+    "name": "天马射电天文望远镜",
+    "url": "https://3d.oss.jerryt92.top/tianma.glb",
+    "show": true
+  },
+  "xiaohuangren": {
+    "name": "小黄人",
+    "show": true,
+    "url": "https://3d.oss.jerryt92.top/xiaohuangren.glb"
+  },
+  "duck": {
+    "name": "小黄鸭",
+    "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Duck/glTF-Binary/Duck.glb",
+    "show": true
+  }
+}
