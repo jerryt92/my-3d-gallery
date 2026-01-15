@@ -1,6 +1,6 @@
 {
   "jialiluedengta": {
-    "name": "普生·伽利略灯塔",
+    "name": "普生 · 伽利略灯塔",
     "url": "https://3d.oss.jerryt92.top/jialiluedengta.glb",
     "show": true
   },
@@ -8,11 +8,6 @@
     "name": "天马射电天文望远镜",
     "url": "https://3d.oss.jerryt92.top/tianma.glb",
     "show": true
-  },
-  "wurenji": {
-    "name": "DJI Mini 5 Pro",
-    "show": true,
-    "url": "https://3d.oss.jerryt92.top/wurenji.glb"
   },
   "xiaohuangren": {
     "name": "小黄人",
@@ -22,11 +17,6 @@
   "duck": {
     "name": "小黄鸭",
     "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Duck/glTF-Binary/Duck.glb",
-    "show": true
-  },
-  "chongdianbao": {
-    "name": "充电宝",
-    "url": "https://3d.oss.jerryt92.top/chongdianbao.glb",
     "show": true
   }
 }
