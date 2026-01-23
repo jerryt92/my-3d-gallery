@@ -1,14 +1,14 @@
 {
     "public": true,
-    "routes": [
+    "rewrites": [
         {
-            "src": "/assets/(.*)",
-            "headers": { "cache-control": "max-age=604800, public" },
-            "dest": "/assets/$1"
+            "source": "/assets/(.*)",
+            "destination": "/assets/$1",
+            "headers": { "cache-control": "max-age=604800, public" }
         },
         {
-            "src": "/(.*)",
-            "dest": "/public/$1"
+            "source": "/(.*)",
+            "destination": "/index.html"
         }
     ]
 }

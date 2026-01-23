@@ -35,3 +35,4 @@ package-lock.json
 
 /src/pages/web-nms-broadband
 /src/pages/web-nms-datacom
+/public/models/
