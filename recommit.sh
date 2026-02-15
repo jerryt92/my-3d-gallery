@@ -2,8 +2,8 @@
 git config user.name "jerryt92"
 git config user.mail "jerrytian92@outlook.com"
 git config user.name
-git reset 83c31802ba551f3647f0e51a5cc69a10ba81e12d --soft
+git reset a34039b0aebef99daf2be1443ddfd1403e68a3bb --soft
 git push -f
 git add .
-git commit -m 'add action'
+git commit -m 'update models'
 git push
