@@ -1,4 +1,14 @@
 {
+  "jnxx": {
+    "name": "小学",
+    "url": "https://3d.oss.jerryt92.top/jnxx.glb",
+    "show": true
+  },
+  "ikea-kunming": {
+    "name": "IKEA 宜家 昆明",
+    "url": "https://3d.oss.jerryt92.top/ikea-kunming.glb",
+    "show": true
+  },
   "jialiluedengta": {
     "name": "普生 · 伽利略灯塔",
     "url": "https://3d.oss.jerryt92.top/jialiluedengta.glb",
@@ -7,6 +17,11 @@
   "tianma": {
     "name": "天马射电天文望远镜",
     "url": "https://3d.oss.jerryt92.top/tianma.glb",
+    "show": true
+  },
+  "big-tree": {
+    "name": "蛮荒大树",
+    "url": "https://3d.oss.jerryt92.top/big-tree.glb",
     "show": true
   },
   "xiaohuangren": {
