@@ -370,7 +370,10 @@ export class Viewer {
 			let finalUrl = modelKey;
 			const filename = modelKey.substring(modelKey.lastIndexOf('/') + 1);
 			const baseTitle = webBaseTitle;
-			fetch(`${import.meta.env.BASE_URL === '/' ? '.' : import.meta.env.BASE_URL}/info.json`)
+			fetch(
+				// `${import.meta.env.BASE_URL === '/' ? '.' : import.meta.env.BASE_URL}/info.json`,
+				`https://raw.githubusercontent.com/jerryt92/my-3d-gallery/refs/heads/main/public/info.json`,
+			)
 				.then((res) => {
 					if (!res.ok) throw new Error('Info file not found');
 					return res.json();

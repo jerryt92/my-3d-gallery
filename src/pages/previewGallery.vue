@@ -134,7 +134,8 @@ onMounted(async () => {
 	try {
 		isLoading.value = true;
 		const res = await fetch(
-			`${import.meta.env.BASE_URL === '/' ? '.' : import.meta.env.BASE_URL}/info.json`,
+			// `${import.meta.env.BASE_URL === '/' ? '.' : import.meta.env.BASE_URL}/info.json`,
+			`https://raw.githubusercontent.com/jerryt92/my-3d-gallery/refs/heads/main/public/info.json`,
 		);
 		const data = await res.json();
 		modelsData.value = data;
