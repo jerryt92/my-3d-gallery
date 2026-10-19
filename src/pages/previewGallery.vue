@@ -5,6 +5,7 @@
 		<header class="gallery-header">
 			<h1>{{ webBaseTitle }}</h1>
 			<p>Select a model to view in 3D</p>
+			<button type="button" class="open-viewer-btn" @click="openViewer">Open Viewer</button>
 		</header>
 
 		<div class="swiper-container">
@@ -196,6 +197,7 @@ const onSlideChange = (swiper) => {
 	prefetchPriority();
 };
 
+/** 携带模型 id 进入查看器 */
 const goToViewer = (modelUrl: string) => {
 	// Web History 模式下，使用 query 参数传递模型路径
 	// URL 格式: /viewer?model=xxx
@@ -203,6 +205,11 @@ const goToViewer = (modelUrl: string) => {
 		path: '/viewer',
 		query: { model: modelUrl },
 	});
+};
+
+/** 不带模型参数，直接进入查看器（可自行拖入文件） */
+const openViewer = () => {
+	router.push({ path: '/viewer' });
 };
 
 const modules = [EffectCoverflow, Keyboard, Mousewheel];
@@ -238,6 +245,21 @@ const modules = [EffectCoverflow, Keyboard, Mousewheel];
 	z-index: 1;
 	text-align: center;
 	padding: 40px 20px;
+}
+
+.open-viewer-btn {
+	margin-top: 16px;
+	padding: 10px 24px;
+	border-radius: 999px;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	background: rgba(255, 255, 255, 0.92);
+	color: #111;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.open-viewer-btn:hover {
+	background: #fff;
 }
 
 .swiper-container {
